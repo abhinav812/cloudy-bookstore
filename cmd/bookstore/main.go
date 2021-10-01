@@ -2,25 +2,28 @@ package main
 
 import (
 	"fmt"
+	"github.com/abhinav812/cloudy-bookstore/config"
 	"log"
 	"math/rand"
 	"net/http"
-	"time"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	appConf := config.AppConfig()
 
+	mux := http.NewServeMux()
 	mux.HandleFunc("/", Greet)
 
-	log.Println("Starting server :8080")
+	address := fmt.Sprintf(":%d", appConf.Server.Port)
+
+	log.Printf("Starting server %s\n", address)
 
 	s := &http.Server{
-		Addr:         ":8080",
+		Addr:         address,
 		Handler:      mux,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  appConf.Server.TimeoutRead,
+		WriteTimeout: appConf.Server.TimeoutWrite,
+		IdleTimeout:  appConf.Server.TimeoutIdle,
 	}
 
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -28,7 +31,7 @@ func main() {
 	}
 }
 
-func Greet(w http.ResponseWriter, r *http.Request) {
+func Greet(w http.ResponseWriter, _ *http.Request) {
 	_, err := fmt.Fprintf(w, "Hello There!!\n"+
 		"Here is a magic number for you %d", rand.Intn(10000))
 	if err != nil {
