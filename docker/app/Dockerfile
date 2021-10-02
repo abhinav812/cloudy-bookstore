@@ -12,6 +12,7 @@ WORKDIR /app
 ENV GO111MODULE=on
 
 COPY go.* . 
+RUN dir
 RUN go mod download
 
 COPY . .
