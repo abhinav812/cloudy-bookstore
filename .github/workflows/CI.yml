@@ -38,7 +38,11 @@ jobs:
     needs: [ build ]
     if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -46,8 +50,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Deploy to Docker registry
+      - name: Build and push
+        id: docker_build
         uses: docker/build-push-action@v2
         with:
-          repository: abhinav812/cloudy-bookstore
-          tag_with_ref: true
+          push: true
+          tags: abhinav812/cloudy-bookstore:latest
