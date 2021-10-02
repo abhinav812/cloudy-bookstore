@@ -39,9 +39,6 @@ jobs:
   # The "deploy" workflow
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./
 
     needs: [ build ]
     if: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
