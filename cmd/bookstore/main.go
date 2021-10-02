@@ -31,6 +31,7 @@ func main() {
 	}
 }
 
+// Greet : a simple handler function to print greetings.
 func Greet(w http.ResponseWriter, _ *http.Request) {
 	_, err := fmt.Fprintf(w, "Hello There!!\n"+
 		"Here is a magic number for you %d", rand.Intn(10000))
