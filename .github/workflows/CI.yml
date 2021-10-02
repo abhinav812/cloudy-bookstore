@@ -32,3 +32,22 @@ jobs:
         run: |
           go vet ./cmd/bookstore/main.go
           golint ./cmd/bookstore/main.go
+  # The "deploy" workflow
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    if: ${{ github.ref == ‘refs/heads/master’ && github.event_name == ‘push’ }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Deploy to Docker registry
+        uses: docker/build-push-action@v2
+        with:
+          repository: abhinav812/cloudy-bookstore
+          tag_with_ref: true
