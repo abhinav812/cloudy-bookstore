@@ -9,6 +9,10 @@ on:
     branches:
       - master
       - develop
+      
+defaults:
+  run:
+    working-directory: .      
 
 jobs:
   # The “build” workflow
