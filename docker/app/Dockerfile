@@ -4,7 +4,7 @@ FROM golang:1.16-alpine as builder
 
 RUN apk update && \
     apk upgrade && \
-    apk add --no-cache git
+    apk add --no-cache git bash
 
 RUN mkdir /app
 WORKDIR /app
