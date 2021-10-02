@@ -11,7 +11,8 @@ WORKDIR /app
 
 ENV GO111MODULE=on
 
-COPY go.mod go.sum ./
+COPY go.mod . 
+COPY go.sum .
 RUN go mod download
 
 COPY . .
