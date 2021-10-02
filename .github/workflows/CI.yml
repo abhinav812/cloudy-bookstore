@@ -1,0 +1,34 @@
+name: cloudy-bookstore-CICD
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  # The “build” workflow
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up GO 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.16.0'
+      - name: Install dependencies
+        run: |
+          go version
+          go get -u golang.org/x/lint/golint
+      - name: Run build
+        run: go build -o bookstore.exe ./cmd/bookstore/main.go
+      - name: Run vet & lint
+        run: |
+          go vet ./cmd/bookstore/main.go
+          golint ./cmd/bookstore/main.go
