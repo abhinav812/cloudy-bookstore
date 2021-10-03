@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build, Push and Deploy to Heroku
         id: heroku
-        uses: jctaveras/heroku-deploy@v1.0.0
+        uses: techmmunity/docker-heroku-deploy@v1.0.0
         with:
           context: ./
           email: ${{ secrets.HEROKU_EMAIL }}
