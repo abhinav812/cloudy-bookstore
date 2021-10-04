@@ -36,8 +36,8 @@ jobs:
         run: |
           go vet ./cmd/bookstore/main.go
           golint ./cmd/bookstore/main.go
-  # The "deploy" workflow
-  deploy:
+  # The "docker" workflow, build and publishes docker image to registry
+  docker:
     runs-on: ubuntu-latest
 
     needs: [ build ]

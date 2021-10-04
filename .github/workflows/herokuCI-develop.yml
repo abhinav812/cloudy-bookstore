@@ -1,0 +1,35 @@
+name: cloudy-bookstore-heroku
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+defaults:
+  run:
+    working-directory: .
+
+jobs:
+  heroku-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/develop' && github.event_name == 'push' }} # deploys only from develop branch
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to Heroku Container registry
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login
+
+      - name: Heroku Build and Push
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:push --recursive --context-path . -a ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: Heroku Release
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} web
