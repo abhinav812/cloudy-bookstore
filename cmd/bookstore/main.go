@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/abhinav812/cloudy-bookstore/config"
+	"github.com/abhinav812/cloudy-bookstore/internal/config"
+	"github.com/abhinav812/cloudy-bookstore/internal/router"
 	"log"
-	"math/rand"
 	"net/http"
 )
 
 func main() {
 	appConf := config.AppConfig()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", Greet)
+	appRouter := router.New()
 
 	address := fmt.Sprintf(":%d", appConf.Server.Port)
 
@@ -20,7 +19,7 @@ func main() {
 
 	s := &http.Server{
 		Addr:         address,
-		Handler:      mux,
+		Handler:      appRouter,
 		ReadTimeout:  appConf.Server.TimeoutRead,
 		WriteTimeout: appConf.Server.TimeoutWrite,
 		IdleTimeout:  appConf.Server.TimeoutIdle,
@@ -28,14 +27,5 @@ func main() {
 
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal("Server startup failed")
-	}
-}
-
-// Greet : a simple handler function to print greetings.
-func Greet(w http.ResponseWriter, _ *http.Request) {
-	_, err := fmt.Fprintf(w, "Hello There!!\n"+
-		"Here is a magic number for you %d", rand.Intn(10000))
-	if err != nil {
-		panic(err)
 	}
 }
