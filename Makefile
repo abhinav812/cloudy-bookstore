@@ -11,6 +11,8 @@ WHITE  := $(shell tput -Txterm setaf 7)
 CYAN   := $(shell tput -Txterm setaf 6)
 RESET  := $(shell tput -Txterm sgr0)
 
+CI_PLATFORM ?= local # to control the action of pushing docker images from CI platform
+
 .PHONY: build help
 all: help
 
@@ -57,7 +59,7 @@ docker-build: ## Use the dockerfile to build the container
 
 
 docker-release: ## Release the container with tag latest and version
-	@echo " > Tagging Docker image... | $(CI_PLATFORM)"
+	@echo " > Tagging Docker image..."
 	docker tag $(IMAGE_NAME) $(IMAGE_NAME):latest
 	docker tag $(IMAGE_NAME) $(IMAGE_NAME):$(TAG)
 ifneq ($(CI_PLATFORM), local) # Do not push docker images from local
