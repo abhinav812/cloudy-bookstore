@@ -53,4 +53,4 @@ jobs:
 
       - name: Build and push
         id: docker_build
-        run: make docker-build-release
+        run: CI_PLATFORM=github-actions make docker-build-release

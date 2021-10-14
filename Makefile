@@ -52,17 +52,21 @@ build: clean verify-install install-dependencies go-vet  go-lint go-test go-buil
 
 ## Docker:
 docker-build: ## Use the dockerfile to build the container
-	@echo " > Building Docker image..."
+	@echo " > Building Docker image for CI_PLATFORM - $(CI_PLATFORM) ..."
 	docker-compose  build --force-rm
 
+
 docker-release: ## Release the container with tag latest and version
-	@echo " > Tagging Docker image..."
+	@echo " > Tagging Docker image... | $(CI_PLATFORM)"
 	docker tag $(IMAGE_NAME) $(IMAGE_NAME):latest
 	docker tag $(IMAGE_NAME) $(IMAGE_NAME):$(TAG)
+ifneq ($(CI_PLATFORM), local) # Do not push docker images from local
 	# Push the docker images
-	@echo " > Pushing Docker image to docker registry..."
+	@echo " > Pushing Docker image to docker registry for CI_PLATFORM - $(CI_PLATFORM)..."
 	docker push $(IMAGE_NAME):latest
 	docker push $(IMAGE_NAME):$(TAG)
+endif
+
 
 docker-build-release: docker-build docker-release ## Build and release docker images in one go
 
