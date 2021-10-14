@@ -1,7 +1,8 @@
-version: '3'
+version: '3.8'
 
 services:
   bookstore-app:
+    image: "${IMAGE_NAME}"
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile

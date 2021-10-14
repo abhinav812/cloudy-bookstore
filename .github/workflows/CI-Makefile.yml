@@ -1,4 +1,4 @@
-name: cloudy-bookstore-CICD
+name: cloudy-bookstore-CICD-Makefile
 
 on:
   push:
@@ -9,10 +9,10 @@ on:
     branches:
       - master
       - develop
-      
+
 defaults:
   run:
-    working-directory: .      
+    working-directory: .
 
 jobs:
   # The “build” workflow
@@ -26,16 +26,9 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.16.0'
-      - name: Install dependencies
-        run: |
-          go version
-          go get -u golang.org/x/lint/golint
-      - name: Run build
-        run: go build -o bookstore.exe ./cmd/bookstore/main.go
-      - name: Run vet & lint
-        run: |
-          go vet ./cmd/bookstore/main.go
-          golint ./cmd/bookstore/main.go
+      - name: Build using Makefile
+        run: make build
+
   # The "docker" workflow, build and publishes docker image to registry
   docker:
     runs-on: ubuntu-latest
@@ -60,9 +53,4 @@ jobs:
 
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: ./
-          file: ./docker/app/Dockerfile
-          push: true
-          tags: abhinav812/cloudy-bookstore:latest
+        run: make docker-build-release
