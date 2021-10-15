@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/joeshaw/envdecode"
 	"log"
 	"time"
+
+	"github.com/joeshaw/envdecode"
 )
 
 type serverConf struct {
@@ -13,10 +14,13 @@ type serverConf struct {
 	TimeoutIdle  time.Duration `env:"SERVER_TIMEOUT_IDLE,required"`
 }
 
+// Conf - struct to wrap around log level and server configuration values
 type Conf struct {
+	Debug  bool `env:"DEBUG,required"`
 	Server serverConf
 }
 
+// AppConfig - creates Conf from environment variables
 func AppConfig() *Conf {
 	var c Conf
 	if err := envdecode.StrictDecode(&c); err != nil {

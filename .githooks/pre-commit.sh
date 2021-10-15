@@ -10,29 +10,29 @@ fi
 PASS=true
 
 for FILE in $STAGED_GO_FILES; do
-  printf "RUNNING GOIMPORTS\n"
   goimports -w "$FILE"
 
-  printf "RUNNING GO LINT\n"
   golint "-set_exit_status" "$FILE"
   # shellcheck disable=SC2039
   if [[ $? == 1 ]]; then
+    printf "**** golint FAILED for %s\n", "$FILE"
     PASS=false
   fi
 
-  printf "RUNNING GO VET\n"
   go vet "$FILE"
   # shellcheck disable=SC2039
   # shellcheck disable=SC2181
   if [[ $? != 0 ]]; then
+    printf "**** go vet FAILED for %s\n", "$FILE"
     PASS=false
   fi
 
-  printf "RUNNING GO TEST\n"
+
   go test -v "$FILE"
   # shellcheck disable=SC2039
   # shellcheck disable=SC2181
   if [[ $? != 0 ]]; then
+    printf "**** go test FAILED for %s\n", "$FILE"
     PASS=false
   fi
 done
