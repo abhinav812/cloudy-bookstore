@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/abhinav812/cloudy-bookstore/internal/app"
+
 	"github.com/abhinav812/cloudy-bookstore/internal/config"
 	"github.com/abhinav812/cloudy-bookstore/internal/router"
 	lr "github.com/abhinav812/cloudy-bookstore/internal/util/logger"
@@ -14,7 +16,9 @@ func main() {
 
 	log := lr.New(appConf.Debug)
 
-	appRouter := router.New()
+	application := app.New(log)
+
+	appRouter := router.New(application)
 
 	address := fmt.Sprintf(":%d", appConf.Server.Port)
 
