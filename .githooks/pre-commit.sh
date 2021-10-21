@@ -18,24 +18,24 @@ for FILE in $STAGED_GO_FILES; do
     printf "**** golint FAILED for %s\n", "$FILE"
     PASS=false
   fi
-
-  go vet "$FILE"
-  # shellcheck disable=SC2039
-  # shellcheck disable=SC2181
-  if [[ $? != 0 ]]; then
-    printf "**** go vet FAILED for %s\n", "$FILE"
-    PASS=false
-  fi
-
-
-  go test -v "$FILE"
-  # shellcheck disable=SC2039
-  # shellcheck disable=SC2181
-  if [[ $? != 0 ]]; then
-    printf "**** go test FAILED for %s\n", "$FILE"
-    PASS=false
-  fi
 done
+
+# go vet/test sometime gives warning on individual files, ignoring dependent files in the same package.
+go test -v ./...
+# shellcheck disable=SC2039
+# shellcheck disable=SC2181
+if [[ $? != 0 ]]; then
+  printf "**** go test FAILED"
+  PASS=false
+fi
+
+go vet ./...
+# shellcheck disable=SC2039
+# shellcheck disable=SC2181
+if [[ $? != 0 ]]; then
+  printf "**** go vet FAILED "
+  PASS=false
+fi
 
 if ! $PASS; then
   printf "COMMIT FAILED\n"
