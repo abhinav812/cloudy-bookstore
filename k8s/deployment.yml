@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-app
+  namespace: bookstore
+  labels:
+    app: bookstore-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: bookstore-app
+      labels:
+        app: bookstore-app
+    spec:
+      containers:
+        - name: bookstore-app
+          image: abhinav812/cloudy-bookstore
+          imagePullPolicy: IfNotPresent
+          command: ["./bookstore"]
+          ports:
+            - name: httpport
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: bookstore-app-config
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: bookstore-app
