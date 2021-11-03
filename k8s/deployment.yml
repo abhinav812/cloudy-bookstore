@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: bookstore-app
-          image: abhinav812/cloudy-bookstore
+          image: abhinav812/cloudy-bookstore:v0.3.0
           imagePullPolicy: IfNotPresent
           command: ["./bookstore"]
           ports:

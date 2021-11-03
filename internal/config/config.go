@@ -14,10 +14,19 @@ type serverConf struct {
 	TimeoutIdle  time.Duration `env:"SERVER_TIMEOUT_IDLE,required"`
 }
 
+type dbConf struct {
+	Host     string `env:"DB_HOST,required"`
+	Port     int    `env:"DB_PORT,required"`
+	Username string `env:"DB_USER,required"`
+	Password string `env:"DB_PASS,required"`
+	DbName   string `env:"DB_NAME,required"`
+}
+
 // Conf - struct to wrap around log level and server configuration values
 type Conf struct {
 	Debug  bool `env:"DEBUG,required"`
 	Server serverConf
+	Db     dbConf
 }
 
 // AppConfig - creates Conf from environment variables

@@ -1,6 +1,7 @@
 .idea/
 out/
 bin/
+pg_data/
 
 
 *.http

@@ -42,7 +42,8 @@ go-lint: ## Run go linter on the *.go files
 go-build: ## Build the project and put the output binary in out/bin/
 	@echo "  >  Running GO BUILD..."
 	mkdir -p out/bin
-	GO111MODULE=on go build -o out/bin/${BINARY_NAME} ./cmd/bookstore/main.go
+	GO111MODULE=on go build -o out/bin/${APP_BINARY_NAME} ./cmd/bookstore/main.go
+	GO111MODULE=on go build -o out/bin/${MIGRATIONS_BINARY_NAME} ./cmd/migrate/main.go
 
 ## Test:
 go-test: ## Run the tests of the project
@@ -62,9 +63,9 @@ docker-release: ## Release the container with tag latest and version
 	@echo " > Tagging Docker image..."
 	docker tag $(IMAGE_NAME) $(IMAGE_NAME):latest
 	docker tag $(IMAGE_NAME) $(IMAGE_NAME):$(TAG)
-ifneq ($(CI_PLATFORM), local) # Do not push docker images from local
+ifneq ($(strip $(CI_PLATFORM)), local) # Do not push docker images from local
 	# Push the docker images
-	@echo " > Pushing Docker image to docker registry for CI_PLATFORM - $(CI_PLATFORM)..."
+	@echo " > Pushing Docker image to docker registry for CI_PLATFORM - '$(CI_PLATFORM)'..."
 	docker push $(IMAGE_NAME):latest
 	docker push $(IMAGE_NAME):$(TAG)
 endif
