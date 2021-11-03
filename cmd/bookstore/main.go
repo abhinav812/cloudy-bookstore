@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/abhinav812/cloudy-bookstore/internal/dao/postgres"
 
 	"github.com/abhinav812/cloudy-bookstore/internal/app"
 
@@ -15,6 +18,13 @@ func main() {
 	appConf := config.AppConfig()
 
 	log := lr.New(appConf.Debug)
+
+	dbStore, err := postgres.NewDBStore(appConf)
+	if err != nil {
+		log.Panic().Err(err)
+		panic(err)
+	}
+	_, _ = dbStore.ConnStatusWithContext(context.TODO())
 
 	application := app.New(log)
 

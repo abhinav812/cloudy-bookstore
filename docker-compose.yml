@@ -10,6 +10,10 @@ services:
       - ./docker/app/.env
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+    command: ["/usr/local/bin/app/wait-for-postgres.sh", "db", "/usr/local/bin/app/init.sh"]
+
 
   db:
     container_name: pg_container
