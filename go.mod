@@ -10,4 +10,6 @@ require (
 	github.com/pressly/goose v2.7.0+incompatible
 	github.com/rs/zerolog v1.25.0
 	google.golang.org/grpc v1.41.0
+	gorm.io/driver/postgres v1.2.1
+	gorm.io/gorm v1.22.2
 )

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"gorm.io/gorm"
 	"net/http"
 
 	"github.com/abhinav812/cloudy-bookstore/internal/dao/postgres"
@@ -24,9 +26,22 @@ func main() {
 		log.Panic().Err(err)
 		panic(err)
 	}
-	_, _ = dbStore.ConnStatusWithContext(context.TODO())
+	code, _ := dbStore.ConnStatusWithContext(context.TODO())
 
-	application := app.New(log)
+	var gormDB *gorm.DB = nil
+	var gormErr error = nil
+	if code == codes.Internal {
+		// Try getting gorm using conf
+		gormDB, gormErr = postgres.GormFromConf(appConf)
+	} else {
+		gormDB, gormErr = postgres.GormFromDbConn(dbStore.DbRef(), appConf.Debug)
+	}
+	if gormErr != nil {
+		log.Panic().Err(err)
+		panic(err)
+	}
+
+	application := app.New(log, gormDB)
 
 	appRouter := router.New(application)
 
