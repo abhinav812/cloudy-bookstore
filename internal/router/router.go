@@ -14,5 +14,9 @@ func New(server *app.Server) *chi.Mux {
 
 	r.Method("GET", "/", handler.NewHandler(server.HandleIndex, l))
 
+	// route for healthz
+	r.Get("/healthz/liveness", app.HandleLive)
+	r.Method("GET", "/healthz/readiness", handler.NewHandler(server.HandleReady, l))
+
 	return r
 }
