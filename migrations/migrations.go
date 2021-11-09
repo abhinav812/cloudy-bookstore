@@ -3,6 +3,7 @@ package migrations
 import (
 	"database/sql"
 	"embed"
+
 	"github.com/pressly/goose/v3"
 )
 

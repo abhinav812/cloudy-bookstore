@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/BurntSushi/toml"
 	"log"
 	"os"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
 // TomlConfig - struct to wrap around log level and server configuration values read from config.toml

@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/abhinav812/cloudy-bookstore/internal/config"
 	"github.com/pkg/errors"
 	"gorm.io/driver/postgres"

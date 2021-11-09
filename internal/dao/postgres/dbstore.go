@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/abhinav812/cloudy-bookstore/internal/config"
 	lr "github.com/abhinav812/cloudy-bookstore/internal/util/logger"
-	"log"
+
 	// Mandatory to load postgres sql library
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
