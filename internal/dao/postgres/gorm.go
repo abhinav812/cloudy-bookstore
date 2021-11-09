@@ -11,20 +11,20 @@ import (
 )
 
 // GormFromConf - Creates new GORM connection based on passed DB configuration
-func GormFromConf(conf *config.Conf) (*gorm.DB, error) {
+func GormFromConf(conf *config.TomlConfig) (*gorm.DB, error) {
 	gormConfig := &gorm.Config{}
-	if conf.Debug {
+	if conf.Logging.Debug {
 		gormConfig = &gorm.Config{
 			Logger: logger.Default.LogMode(logger.Info),
 		}
 	}
 
 	dbConnString := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable",
-		conf.Db.Host,
-		conf.Db.Port,
-		conf.Db.Username,
-		conf.Db.DbName,
-		conf.Db.Password)
+		conf.DB.Host,
+		conf.DB.Port,
+		conf.DB.User,
+		conf.DB.DbName,
+		conf.DB.Password)
 
 	gormDB, err := gorm.Open(postgres.Open(dbConnString), gormConfig)
 	if err != nil {

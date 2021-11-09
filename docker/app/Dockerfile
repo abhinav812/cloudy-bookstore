@@ -29,6 +29,8 @@ WORKDIR /app
 COPY --from=builder /app/bookstore .
 COPY --from=builder /app/migrate .
 COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/config.docker.toml .
+COPY --from=builder /app/config.k8s-dev.toml .
 
 COPY --from=builder /app/docker/app/bin /usr/local/bin/app
 RUN chmod +x /usr/local/bin/app/

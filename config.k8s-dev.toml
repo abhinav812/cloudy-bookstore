@@ -1,0 +1,17 @@
+[database]
+# Postgres configuration
+host = "ip_address of database"
+port = 5432
+user = "root"
+password = "Password"
+dbName = "cloudy_bookstore"
+
+[server]
+# http server configuration
+port = 8080
+readTimeout = "5s"
+writeTimeout = "10s"
+idleTimeout = "15s"
+
+[logging]
+debug = true

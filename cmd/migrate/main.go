@@ -8,7 +8,7 @@ import (
 
 	"github.com/abhinav812/cloudy-bookstore/internal/config"
 	"github.com/abhinav812/cloudy-bookstore/internal/dao/postgres"
-	"github.com/pressly/goose"
+	"github.com/pressly/goose/v3"
 )
 
 const dialect = "postgres"
@@ -47,7 +47,10 @@ func main() {
 		return
 	}
 
-	appConf := config.AppConfig()
+	appConf, err := config.AppTomlConfig()
+	if err != nil {
+		panic(err)
+	}
 	dbStore, err := postgres.NewDBStore(appConf)
 	if err != nil {
 		log.Fatalf(err.Error())

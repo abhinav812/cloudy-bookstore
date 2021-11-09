@@ -1,39 +1,61 @@
 package config
 
 import (
+	"github.com/BurntSushi/toml"
 	"log"
+	"os"
 	"time"
-
-	"github.com/joeshaw/envdecode"
 )
 
-type serverConf struct {
-	Port         int           `env:"PORT, required"`
-	TimeoutRead  time.Duration `env:"SERVER_TIMEOUT_READ,required"`
-	TimeoutWrite time.Duration `env:"SERVER_TIMEOUT_WRITE,required"`
-	TimeoutIdle  time.Duration `env:"SERVER_TIMEOUT_IDLE,required"`
+// TomlConfig - struct to wrap around log level and server configuration values read from config.toml
+type TomlConfig struct {
+	DB      database `toml:"database"`
+	Server  serverInfo
+	Logging loggingInfo
 }
 
-type dbConf struct {
-	Host     string `env:"DB_HOST,required"`
-	Port     int    `env:"DB_PORT,required"`
-	Username string `env:"DB_USER,required"`
-	Password string `env:"DB_PASS,required"`
-	DbName   string `env:"DB_NAME,required"`
+type database struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DbName   string
 }
 
-// Conf - struct to wrap around log level and server configuration values
-type Conf struct {
-	Debug  bool `env:"DEBUG,required"`
-	Server serverConf
-	Db     dbConf
+type serverInfo struct {
+	Port         int
+	ReadTimeout  duration
+	WriteTimeout duration
+	IdleTimeout  duration
 }
 
-// AppConfig - creates Conf from environment variables
-func AppConfig() *Conf {
-	var c Conf
-	if err := envdecode.StrictDecode(&c); err != nil {
-		log.Fatalf("Failed to decode: %s", err)
+type loggingInfo struct {
+	Debug bool
+}
+
+// AppTomlConfig - creates toml from environment variables
+func AppTomlConfig() (*TomlConfig, error) {
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		log.Fatalf("No config path specified")
 	}
-	return &c
+
+	var config TomlConfig
+
+	if _, err := toml.DecodeFile(configPath, &config); err != nil {
+		log.Fatalf("Failed to load config.toml. %v", err)
+		return nil, err
+	}
+	return &config, nil
+}
+
+type duration struct {
+	time.Duration
+}
+
+// UnmarshalText - this is used in parsing duration values as string in toml files.
+func (d *duration) UnmarshalText(text []byte) error {
+	var err error
+	d.Duration, err = time.ParseDuration(string(text))
+	return err
 }
