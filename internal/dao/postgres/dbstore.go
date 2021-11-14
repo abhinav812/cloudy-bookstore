@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/abhinav812/cloudy-bookstore/internal/config"
 	lr "github.com/abhinav812/cloudy-bookstore/internal/util/logger"
-	"log"
+
 	// Mandatory to load postgres sql library
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
@@ -20,8 +22,8 @@ type DBStore struct {
 }
 
 //NewDBStore - Initializes database based on the config.Conf and returns new instance of DBStore
-func NewDBStore(conf *config.Conf) (*DBStore, error) {
-	logger := lr.New(conf.Debug)
+func NewDBStore(conf *config.TomlConfig) (*DBStore, error) {
+	logger := lr.New(conf.Logging.Debug)
 
 	defer func() {
 		if err := recover(); err != nil {
@@ -32,14 +34,14 @@ func NewDBStore(conf *config.Conf) (*DBStore, error) {
 
 	dbStore := &DBStore{}
 
-	log.Printf("dbConfig hostname : %v, username: %v\n", conf.Db.Host, conf.Db.Username)
+	log.Printf("dbConfig hostname : %v, username: %v\n", conf.DB.Host, conf.DB.User)
 
 	dbConnString := fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=disable",
-		conf.Db.Host,
-		conf.Db.Port,
-		conf.Db.Username,
-		conf.Db.DbName,
-		conf.Db.Password)
+		conf.DB.Host,
+		conf.DB.Port,
+		conf.DB.User,
+		conf.DB.DbName,
+		conf.DB.Password)
 
 	//log.Printf("Connecting to [%s]", dbConnString)
 	logger.Info().Msgf("Connecting to [%s]", dbConnString)

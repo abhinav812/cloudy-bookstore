@@ -6,13 +6,4 @@ metadata:
   labels:
     app: bookstore-app-config
 data:
-  DEBUG: 'false'
-  PORT: '8080'
-  SERVER_TIMEOUT_READ: '5s'
-  SERVER_TIMEOUT_WRITE: '10s'
-  SERVER_TIMEOUT_IDLE: '15s'
-  DB_HOST: '10.0.0.173'
-  DB_USER: 'root'
-  DB_PASS: 'Password'
-  DB_NAME: 'cloudy_bookstore'
-  DB_PORT: '5432'
+  CONFIG_PATH: 'config.k8s-dev.toml'

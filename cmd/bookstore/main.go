@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/abhinav812/cloudy-bookstore/migrations"
+	"google.golang.org/grpc/codes"
+	"gorm.io/gorm"
+
 	"github.com/abhinav812/cloudy-bookstore/internal/dao/postgres"
 
 	"github.com/abhinav812/cloudy-bookstore/internal/app"
@@ -15,18 +19,61 @@ import (
 )
 
 func main() {
-	appConf := config.AppConfig()
+	// Get the app config
+	appConf, err := config.AppTomlConfig()
+	if err != nil {
+		panic(err)
+	}
 
-	log := lr.New(appConf.Debug)
+	// create logger
+	log := lr.New(appConf.Logging.Debug)
 
+	// connect to database
 	dbStore, err := postgres.NewDBStore(appConf)
 	if err != nil {
 		log.Panic().Err(err)
 		panic(err)
 	}
-	_, _ = dbStore.ConnStatusWithContext(context.TODO())
+	code, _ := dbStore.ConnStatusWithContext(context.TODO())
 
-	application := app.New(log)
+	// apply DB migration
+	if err := migrations.ApplyDBMigration(dbStore.DbRef()); err != nil {
+		log.Panic().Err(err).Msg("DB migrations failed")
+	}
+
+	// create GORM for connected database
+	gormDB, err := createGorm(code, appConf, dbStore)
+	if err != nil {
+		log.Panic().Err(err)
+	}
+
+	// create application
+	s := createApplication(log, gormDB, appConf)
+
+	// Start application
+	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal().Err(err).Msg("Server startup failed")
+	}
+}
+
+func createGorm(code codes.Code, appConf *config.TomlConfig, dbStore *postgres.DBStore) (*gorm.DB, error) {
+	var gormDB *gorm.DB = nil
+	var gormErr error = nil
+	if code == codes.Internal {
+		// Try getting gorm using conf
+		gormDB, gormErr = postgres.GormFromConf(appConf)
+	} else {
+		gormDB, gormErr = postgres.GormFromDbConn(dbStore.DbRef(), appConf.Logging.Debug)
+	}
+	if gormErr != nil {
+		return nil, gormErr
+	}
+
+	return gormDB, nil
+}
+
+func createApplication(log *lr.Logger, gormDB *gorm.DB, appConf *config.TomlConfig) *http.Server {
+	application := app.New(log, gormDB)
 
 	appRouter := router.New(application)
 
@@ -37,12 +84,10 @@ func main() {
 	s := &http.Server{
 		Addr:         address,
 		Handler:      appRouter,
-		ReadTimeout:  appConf.Server.TimeoutRead,
-		WriteTimeout: appConf.Server.TimeoutWrite,
-		IdleTimeout:  appConf.Server.TimeoutIdle,
+		ReadTimeout:  appConf.Server.ReadTimeout.Duration,
+		WriteTimeout: appConf.Server.WriteTimeout.Duration,
+		IdleTimeout:  appConf.Server.IdleTimeout.Duration,
 	}
 
-	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal().Err(err).Msg("Server startup failed")
-	}
+	return s
 }
