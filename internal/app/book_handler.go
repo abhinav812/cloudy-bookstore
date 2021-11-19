@@ -3,12 +3,13 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/abhinav812/cloudy-bookstore/internal/model"
 	"github.com/abhinav812/cloudy-bookstore/internal/repository"
 	"github.com/go-chi/chi"
 	"gorm.io/gorm"
-	"net/http"
-	"strconv"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 )
 
 //HandleListBooks - http route to list all the books. Returns result in form of model.BookDtos
-func (s *Server) HandleListBooks(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleListBooks(w http.ResponseWriter, _ *http.Request) {
 	books, err := repository.ListBooks(s.db)
 	if err != nil {
 		s.Logger().Warn().Err(err).Msg("")
@@ -55,7 +56,7 @@ func (s *Server) HandleCreateBook(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(book); err != nil {
 		s.logger.Warn().Err(err).Msg("")
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		fmt.Fprintf(w, `{"error": "%v"}`, appErrFormDecodingFailure)
+		_, _ = fmt.Fprintf(w, `{"error": "%v"}`, appErrFormDecodingFailure)
 		return
 	}
 
@@ -93,7 +94,7 @@ func (s *Server) HandleReadBook(w http.ResponseWriter, r *http.Request) {
 		}
 		s.logger.Warn().Err(err).Msg("")
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error": "%v"}`, appErrDataAccessFailure)
+		_, _ = fmt.Fprintf(w, `{"error": "%v"}`, appErrDataAccessFailure)
 		return
 	}
 
@@ -101,7 +102,7 @@ func (s *Server) HandleReadBook(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(dto); err != nil {
 		s.logger.Warn().Err(err).Msg("")
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error": "%v"}`, appErrJSONCreationFailure)
+		_, _ = fmt.Fprintf(w, `{"error": "%v"}`, appErrJSONCreationFailure)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -125,7 +126,7 @@ func (s *Server) HandleUpdateBook(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(book); err != nil {
 		s.logger.Warn().Err(err).Msg("")
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		fmt.Fprintf(w, `{"error": "%v"}`, appErrFormDecodingFailure)
+		_, _ = fmt.Fprintf(w, `{"error": "%v"}`, appErrFormDecodingFailure)
 		return
 	}
 
@@ -137,7 +138,7 @@ func (s *Server) HandleUpdateBook(w http.ResponseWriter, r *http.Request) {
 		}
 		s.logger.Warn().Err(err).Msg("")
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error": "%v"}`, appErrDataUpdateFailure)
+		_, _ = fmt.Fprintf(w, `{"error": "%v"}`, appErrDataUpdateFailure)
 		return
 	}
 
@@ -162,7 +163,7 @@ func (s *Server) HandleDeleteBook(w http.ResponseWriter, r *http.Request) {
 	if err := repository.DeleteBook(s.db, uint(id)); err != nil {
 		s.logger.Warn().Err(err).Msg("")
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error": "%v"}`, appErrDataAccessFailure)
+		_, _ = fmt.Fprintf(w, `{"error": "%v"}`, appErrDataAccessFailure)
 		return
 	}
 	s.logger.Info().Msgf("Book deleted: %d", id)

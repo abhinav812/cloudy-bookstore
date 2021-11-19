@@ -2,10 +2,11 @@ package middleware_test
 
 import (
 	"fmt"
-	"github.com/abhinav812/cloudy-bookstore/internal/router/middleware"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/abhinav812/cloudy-bookstore/internal/router/middleware"
 )
 
 var (
