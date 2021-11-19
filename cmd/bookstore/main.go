@@ -57,8 +57,8 @@ func main() {
 }
 
 func createGorm(code codes.Code, appConf *config.TomlConfig, dbStore *postgres.DBStore) (*gorm.DB, error) {
-	var gormDB *gorm.DB = nil
-	var gormErr error = nil
+	var gormDB *gorm.DB
+	var gormErr error
 	if code == codes.Internal {
 		// Try getting gorm using conf
 		gormDB, gormErr = postgres.GormFromConf(appConf)

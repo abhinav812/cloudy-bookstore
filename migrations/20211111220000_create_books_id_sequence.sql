@@ -6,4 +6,6 @@ ALTER TABLE books
 -- +goose Down
 DROP SEQUENCE books_id_seq;
 ALTER TABLE books
-    ALTER COLUMN id TYPE SERIAL NOT NULL PRIMARY KEY;
+    ALTER COLUMN id TYPE int ;
+ALTER TABLE books
+    ALTER COLUMN id SET not null ;
